@@ -1,0 +1,14 @@
+.event-list-container {
+  border: 1px solid black;
+  overflow: auto;
+  //background: aqua;
+  height: var(--windowVideoHeight);
+  .event {
+    display: flex;
+    cursor: pointer;
+    margin: 5px;
+    &:hover {
+    background: aqua;
+  }
+  }
+}
