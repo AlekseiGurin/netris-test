@@ -1,9 +1,11 @@
 .event-list-container {
+  box-sizing: border-box;
   border: 1px solid black;
   overflow: auto;
   //background: aqua;
   height: var(--windowVideoHeight);
   .event {
+
     display: flex;
     cursor: pointer;
     margin: 5px;
