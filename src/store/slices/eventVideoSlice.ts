@@ -3,13 +3,15 @@ import { RootState, AppThunk } from '../../store/store';
 //import { fetchCount } from './counterAPI';
 
 export interface EventVideoState {
-    selectedVideoId: number | undefined
+    selectedEventVideo: {
+        timestamp?: number
+    }
 }
 
 
 
 const initialState: EventVideoState = {
-    selectedVideoId: undefined
+    selectedEventVideo: {}
 };
 
 // Приведенная ниже функция называется thunk и позволяет нам выполнять асинхронную логику. Это
@@ -31,23 +33,10 @@ export const eventVideoSelectorSlice = createSlice({
     initialState,
 // Поле `reducers` позволяет нам определять редьюсеры и генерировать связанные действия
     reducers: {
-        selectedEventVideo: (state) => {
-
+        eventVideoSelection: (state, PayloadAction) => {
+            console.log('PayloadAction',PayloadAction)
+            state.selectedEventVideo = PayloadAction.payload;
         }
-        // increment: (state) => {
-        //     // Redux Toolkit позволяет нам писать «мутирующую» логику в редьюсерах. Это
-        //     // на самом деле не мутирует состояние, потому что использует библиотеку Immer,
-        //     // который обнаруживает изменения в "состоянии черновика" и создает совершенно новый
-        //     // неизменное состояние, основанное на этих изменениях
-        //     state.value += 1;
-        // },
-        // decrement: (state) => {
-        //     state.value -= 1;
-        // },
-        // // Используйте тип PayloadAction для объявления содержимого action.payload.
-        // incrementByAmount: (state, action: PayloadAction<number>) => {
-        //     state.value += action.payload;
-        // },
     },
     // Поле `extraReducers` позволяет срезу обрабатывать действия, определенные в другом месте,
     // включая действия, сгенерированные createAsyncThunk или другими слайсами.
@@ -66,12 +55,12 @@ export const eventVideoSelectorSlice = createSlice({
     // },
 });
 
-//export const { increment, decrement, incrementByAmount } = eventVideoSelectorSlice.actions;
+export const { eventVideoSelection } = eventVideoSelectorSlice.actions;
 
 // Приведенная ниже функция называется селектором и позволяет нам выбрать значение из
 // штат. Селекторы также могут быть определены встроенными, где они используются вместо
 // в файле среза. Например: `useSelector((состояние: RootState) => состояние.счетчик.значение)`
-export const selectCount = (state: RootState) => state.counter.value;
+export const selectEvent = (state: RootState) => state.selectedEventVideo;
 
 // Мы также можем вручную написать переходники, которые могут содержать как синхронную, так и асинхронную логику.
 // Вот пример условной отправки действий на основе текущего состояния.

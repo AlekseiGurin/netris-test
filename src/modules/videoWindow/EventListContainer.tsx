@@ -1,6 +1,8 @@
 import React, { useState } from "react";
 import eventList from "./eventList.json"
 import moment from "moment";
+import {useAppDispatch} from "../../store/hooks";
+import {eventVideoSelection} from "../../store/slices/eventVideoSlice";
 const sortedListOfEvents = eventList.events.sort((a, b) => a.timestamp - b.timestamp )
 
 type EventType = {
@@ -8,31 +10,37 @@ type EventType = {
     timestamp: number,
     duration: number
 }
-const handleEventClick = (e: React.MouseEvent ) => {
-    console.log('event',e)
-    console.log('currentTarget',e.currentTarget)
-}
-const renderEvent = (event: EventType) => {
-const totalMs = event.timestamp;
-const min = Math.floor(Number(totalMs)/60000);
-const sec = Math.floor(Number(totalMs)/1000);
-const ms = totalMs.toString().slice(-3)
-const totalTimeString = `${min} : ${sec} : ${ms}`
+
+const EventListContainer = () => {
+    //console.log('sortedListOfEvents',sortedListOfEvents)
+    const handleEventClick = (e: React.MouseEvent ) => {
+        const id = Number(e.currentTarget.id)
+        console.log('id',id)
+        console.log('eventList', sortedListOfEvents)
+        const selectedEvent = sortedListOfEvents.find(item => item.id === id)
+        console.log('selectedEvent',selectedEvent)
+        dispatch(eventVideoSelection(selectedEvent))
+    }
+    const renderEvent = (event: EventType) => {
+        const totalMs = event.timestamp;
+        const min = Math.floor(Number(totalMs)/60000);
+        const sec = Math.floor(Number(totalMs)/1000);
+        const ms = totalMs.toString().slice(-3)
+        const totalTimeString = `${min} : ${sec} : ${ms}`
 // console.log('totalMs',totalMs)
 // console.log('min',min)
 // console.log('sec',sec)
 // console.log('ms',ms)
 // console.log('totalTimeString',totalTimeString)
-    return (
-        <div key={event.id} id={event.id.toString()} className="event" onClick={handleEventClick}>
-            <div>{`id: ${event.id}`}</div>
-            <div>{`timestamp: ${totalTimeString}`}</div>
-            <div>{`duration: ${event.duration}`}</div>
-        </div>
-    )
-}
-const EventListContainer = () => {
-    //console.log('sortedListOfEvents',sortedListOfEvents)
+        return (
+            <div key={event.id} id={event.id.toString()} className="event" onClick={handleEventClick}>
+                <div>{`id: ${event.id}`}</div>
+                <div>{`timestamp: ${totalTimeString}`}</div>
+                <div>{`duration: ${event.duration}`}</div>
+            </div>
+        )
+    }
+    const dispatch = useAppDispatch();
     return (
         <div className="event-list-container">
             {sortedListOfEvents.map((event) => renderEvent(event))}
