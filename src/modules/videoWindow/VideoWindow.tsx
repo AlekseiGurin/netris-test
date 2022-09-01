@@ -1,20 +1,23 @@
 import React, {useEffect} from 'react';
 import { useAppSelector } from "../../store/hooks";
 import { selectEvent } from "../../store/slices/eventVideoSlice";
+import eventList from "./eventList.json"
+
 
 const VideoWindow = () => {
 
     const selectedEvent = useAppSelector(selectEvent)
     useEffect(() => {
-        console.log('selectedEvent',selectedEvent)
-        const video = document.getElementById('my-video') as HTMLMediaElement
+        const videoElement = document.getElementById('my-video') as HTMLMediaElement
         const timestamp = selectedEvent.selectedEventVideo && selectedEvent.selectedEventVideo.timestamp && Number((selectedEvent.selectedEventVideo.timestamp / 1000).toFixed(3));
-        console.log('timestamp', timestamp)
         if (timestamp) {
-            video.currentTime = timestamp
+            // const eventVideoElement = document.getElementById(selectedEvent.selectedEventVideo.id.toString()) as HTMLElement;
+            // console.log('eventVideoElement',eventVideoElement)
+            // eventVideoElement.classList.add('selected')
+            videoElement.currentTime = timestamp
         }
         console.log('selectedEvent',selectedEvent)
-        console.log('video',video.currentTime)
+        console.log('video',videoElement.currentTime)
 
     },[selectedEvent]);
     useEffect(() => {

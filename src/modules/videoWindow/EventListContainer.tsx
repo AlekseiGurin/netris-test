@@ -1,8 +1,8 @@
 import React, { useState } from "react";
 import eventList from "./eventList.json"
 import moment from "moment";
-import {useAppDispatch} from "../../store/hooks";
-import {eventVideoSelection} from "../../store/slices/eventVideoSlice";
+import {useAppDispatch, useAppSelector} from "../../store/hooks";
+import {eventVideoSelection, selectEvent} from "../../store/slices/eventVideoSlice";
 const sortedListOfEvents = eventList.events.sort((a, b) => a.timestamp - b.timestamp )
 
 type EventType = {
@@ -12,7 +12,7 @@ type EventType = {
 }
 
 const EventListContainer = () => {
-    //console.log('sortedListOfEvents',sortedListOfEvents)
+    console.log('sortedListOfEvents',sortedListOfEvents)
     const handleEventClick = (e: React.MouseEvent ) => {
         const id = Number(e.currentTarget.id)
         console.log('id',id)
@@ -23,9 +23,15 @@ const EventListContainer = () => {
     }
     const renderEvent = (event: EventType) => {
         const totalMs = event.timestamp;
-        const min = Math.floor(Number(totalMs)/60000);
-        const sec = Math.floor(Number(totalMs)/1000);
-        const ms = totalMs.toString().slice(-3)
+        let min = Math.floor(Number(totalMs)/60000).toString();
+        let sec = (Math.floor(Number(totalMs)/1000)%60).toString();
+        const ms = totalMs.toString().slice(-3,-1);
+        if(Number(min) < 9) {
+            min = `0${min}`
+        };
+        if(Number(sec) < 9) {
+            sec = `0${sec}`
+        }
         const totalTimeString = `${min} : ${sec} : ${ms}`
 // console.log('totalMs',totalMs)
 // console.log('min',min)
@@ -34,9 +40,7 @@ const EventListContainer = () => {
 // console.log('totalTimeString',totalTimeString)
         return (
             <div key={event.id} id={event.id.toString()} className="event" onClick={handleEventClick}>
-                <div>{`id: ${event.id}`}</div>
-                <div>{`timestamp: ${totalTimeString}`}</div>
-                <div>{`duration: ${event.duration}`}</div>
+                <div>{totalTimeString}</div>
             </div>
         )
     }

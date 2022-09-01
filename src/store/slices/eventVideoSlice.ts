@@ -1,17 +1,18 @@
-import { createAsyncThunk, createSlice, PayloadAction } from '@reduxjs/toolkit';
-import { RootState, AppThunk } from '../../store/store';
-//import { fetchCount } from './counterAPI';
+import { createSlice } from '@reduxjs/toolkit';
+import { RootState } from '../../store/store';
 
 export interface EventVideoState {
     selectedEventVideo: {
-        timestamp?: number
+        timestamp: number,
+        id: number
     }
 }
 
-
-
 const initialState: EventVideoState = {
-    selectedEventVideo: {}
+    selectedEventVideo: {
+        timestamp: 0,
+        id: 0
+    }
 };
 
 // Приведенная ниже функция называется thunk и позволяет нам выполнять асинхронную логику. Это
