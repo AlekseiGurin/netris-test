@@ -1,0 +1,11 @@
+.video-window-container {
+  position: relative;
+  video {
+    width: 91vw;
+    height: var(--windowVideoHeight);
+  }
+  .green-rectangle {
+    position: absolute;
+    background: green;
+  }
+}

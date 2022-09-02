@@ -4,14 +4,28 @@ import { RootState } from '../../store/store';
 export interface EventVideoState {
     selectedEventVideo: {
         timestamp: number,
-        id: number
+        id: number,
+        zone: {
+            top: number,
+            left: number,
+            height: number,
+            width: number
+        }
+        duration: number
     }
 }
 
 const initialState: EventVideoState = {
     selectedEventVideo: {
         timestamp: 0,
-        id: 0
+        id: 0,
+        duration: 0,
+        zone: {
+            top: 0,
+            left: 0,
+            height: 0,
+            width: 0
+        }
     }
 };
 
@@ -34,9 +48,23 @@ export const eventVideoSelectorSlice = createSlice({
     initialState,
 // Поле `reducers` позволяет нам определять редьюсеры и генерировать связанные действия
     reducers: {
-        eventVideoSelection: (state, PayloadAction) => {
+        selectEventVideo: (state, PayloadAction) => {
             console.log('PayloadAction',PayloadAction)
             state.selectedEventVideo = PayloadAction.payload;
+        },
+        deleteEventVideo: (state) => {
+            state.selectedEventVideo = {
+                timestamp: 0,
+                id: 0,
+                duration: 0,
+                zone: {
+                top: 0,
+                left: 0,
+                height: 0,
+                width: 0
+                }
+            }
+            console.log('selectedEventVideo',state.selectedEventVideo)
         }
     },
     // Поле `extraReducers` позволяет срезу обрабатывать действия, определенные в другом месте,
@@ -56,7 +84,7 @@ export const eventVideoSelectorSlice = createSlice({
     // },
 });
 
-export const { eventVideoSelection } = eventVideoSelectorSlice.actions;
+export const { selectEventVideo, deleteEventVideo } = eventVideoSelectorSlice.actions;
 
 // Приведенная ниже функция называется селектором и позволяет нам выбрать значение из
 // штат. Селекторы также могут быть определены встроенными, где они используются вместо

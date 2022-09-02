@@ -1,8 +1,8 @@
 import React, { useState } from "react";
 import eventList from "./eventList.json"
 import moment from "moment";
-import {useAppDispatch, useAppSelector} from "../../store/hooks";
-import {eventVideoSelection, selectEvent} from "../../store/slices/eventVideoSlice";
+import { useAppDispatch, useAppSelector } from "../../store/hooks";
+import { selectEventVideo, selectEvent } from "../../store/slices/eventVideoSlice";
 const sortedListOfEvents = eventList.events.sort((a, b) => a.timestamp - b.timestamp )
 
 type EventType = {
@@ -12,14 +12,15 @@ type EventType = {
 }
 
 const EventListContainer = () => {
-    console.log('sortedListOfEvents',sortedListOfEvents)
+    //console.log('sortedListOfEvents',sortedListOfEvents)
+    const dispatch = useAppDispatch();
     const handleEventClick = (e: React.MouseEvent ) => {
         const id = Number(e.currentTarget.id)
         console.log('id',id)
         console.log('eventList', sortedListOfEvents)
         const selectedEvent = sortedListOfEvents.find(item => item.id === id)
         console.log('selectedEvent',selectedEvent)
-        dispatch(eventVideoSelection(selectedEvent))
+        dispatch(selectEventVideo(selectedEvent))
     }
     const renderEvent = (event: EventType) => {
         const totalMs = event.timestamp;
@@ -44,7 +45,6 @@ const EventListContainer = () => {
             </div>
         )
     }
-    const dispatch = useAppDispatch();
     return (
         <div className="event-list-container">
             {sortedListOfEvents.map((event) => renderEvent(event))}
