@@ -5,13 +5,13 @@ export interface EventVideoState {
     selectedEventVideo: {
         timestamp: number,
         id: number,
+        duration: number,
         zone: {
             top: number,
             left: number,
             height: number,
             width: number
         }
-        duration: number
     }
 }
 

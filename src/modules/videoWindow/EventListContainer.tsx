@@ -1,9 +1,7 @@
-import React, { useState } from "react";
-import eventList from "./eventList.json"
-import moment from "moment";
+import React, { useEffect, useRef, useState } from "react";
 import { useAppDispatch, useAppSelector } from "../../store/hooks";
-import { selectEventVideo, selectEvent } from "../../store/slices/eventVideoSlice";
-const sortedListOfEvents = eventList.events.sort((a, b) => a.timestamp - b.timestamp )
+import { selectEventVideo } from "../../store/slices/eventVideoSlice";
+import { selectEventList } from "../../store/slices/eventVideoListSlice";
 
 type EventType = {
     id: number,
@@ -12,21 +10,51 @@ type EventType = {
 }
 
 const EventListContainer = () => {
-    //console.log('sortedListOfEvents',sortedListOfEvents)
     const dispatch = useAppDispatch();
+    const { eventList } = useAppSelector(selectEventList);
+    const [isPlaying, setIsPlaying] = useState(false);
+    let videoElement: HTMLMediaElement ;
+    const playingTimeIntervalRef = useRef<NodeJS.Timeout>();
+    useEffect(()=> {
+        videoElement = document.getElementById('my-video') as HTMLMediaElement;
+        videoElement.addEventListener('playing', isPlayingListener)
+        videoElement.addEventListener('pause', isPausedListener)
+        if (isPlaying) {
+            playingTimeIntervalRef.current = setInterval(() => {
+                eventList.forEach((item) => {
+                    const ms = item.timestamp.toString();
+                    const sec = (Math.floor(Number(item.timestamp)/1000)%60).toString();
+                    const totalTimer = Number(`${sec}.${ms}`);
+                        if (videoElement.currentTime === totalTimer) {
+                            dispatch(selectEventVideo(item))
+                        }
+                    })
+            }, 100)
+        } else {
+            clearInterval(playingTimeIntervalRef.current as NodeJS.Timeout);
+        }
+    },[isPlaying])
+    const isPlayingListener = (e: object) => {
+        console.log('isPlaying')
+        setIsPlaying(true);
+    }
+    const isPausedListener = (e: object) => {
+        console.log('isPaused')
+        setIsPlaying(false);
+    }
+
     const handleEventClick = (e: React.MouseEvent ) => {
         const id = Number(e.currentTarget.id)
-        console.log('id',id)
-        console.log('eventList', sortedListOfEvents)
-        const selectedEvent = sortedListOfEvents.find(item => item.id === id)
-        console.log('selectedEvent',selectedEvent)
+        const selectedEvent = eventList.find(item => item.id === id)
         dispatch(selectEventVideo(selectedEvent))
     }
     const renderEvent = (event: EventType) => {
+        //console.log('renderEvent timer',timer)
         const totalMs = event.timestamp;
         let min = Math.floor(Number(totalMs)/60000).toString();
         let sec = (Math.floor(Number(totalMs)/1000)%60).toString();
         const ms = totalMs.toString().slice(-3,-1);
+       // console.log('ms',ms)
         if(Number(min) < 9) {
             min = `0${min}`
         };
@@ -34,11 +62,6 @@ const EventListContainer = () => {
             sec = `0${sec}`
         }
         const totalTimeString = `${min} : ${sec} : ${ms}`
-// console.log('totalMs',totalMs)
-// console.log('min',min)
-// console.log('sec',sec)
-// console.log('ms',ms)
-// console.log('totalTimeString',totalTimeString)
         return (
             <div key={event.id} id={event.id.toString()} className="event" onClick={handleEventClick}>
                 <div>{totalTimeString}</div>
@@ -47,7 +70,7 @@ const EventListContainer = () => {
     }
     return (
         <div className="event-list-container">
-            {sortedListOfEvents.map((event) => renderEvent(event))}
+            {eventList.map((event) => renderEvent(event))}
         </div>
     )
 }
