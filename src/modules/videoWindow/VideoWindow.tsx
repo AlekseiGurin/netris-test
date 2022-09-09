@@ -1,29 +1,17 @@
-import React, {useEffect, useRef, useState} from 'react';
+import React, {useEffect, useRef } from 'react';
 import { useAppDispatch, useAppSelector } from "../../store/hooks";
-import { deleteEventVideo, selectEvent, selectEventVideo } from "../../store/slices/eventVideoSlice";
-import videojs from 'video.js';
+import { deleteEventVideo, selectEvent } from "../../store/slices/eventVideoSlice";
 import 'video.js/dist/video-js.css';
-import { loadingEventList, selectEventList } from "../../store/slices/eventVideoListSlice";
+import { loadingEventList } from "../../store/slices/eventVideoListSlice";
 
 
 const VideoWindow = () => {
     const dispatch = useAppDispatch();
     const selectedEvent = useAppSelector(selectEvent);
-    const { eventList } = useAppSelector(selectEventList);
     const rectangleStyle = selectedEvent.selectedEventVideo.zone;
     const { duration } = selectedEvent.selectedEventVideo;
-    //const [currentTimer, setCurrentTimer] = useState(0);
-    const [isPlaying, setIsPlaying] = useState(false);
     const timestamp = selectedEvent.selectedEventVideo && selectedEvent.selectedEventVideo.timestamp && Number((selectedEvent.selectedEventVideo.timestamp / 1000).toFixed(3));
     let videoElement;
-    const isPlayingListener = (e: object) => {
-        console.log('isPlaying')
-        setIsPlaying(true);
-    }
-    const isPausedListener = (e: object) => {
-        console.log('isPaused')
-        setIsPlaying(false);
-    }
     const playingTimeIntervalRef = useRef<NodeJS.Timeout>();
     useEffect(() => {
         videoElement = document.getElementById('my-video') as HTMLMediaElement;
@@ -44,7 +32,7 @@ const VideoWindow = () => {
                 clearInterval(playingTimeIntervalRef.current as NodeJS.Timeout);
             }, duration)
         }
-    },[isPlaying, timestamp])
+    },[timestamp])
     return (
         <div className="video-window-container">
             <video
@@ -61,7 +49,7 @@ const VideoWindow = () => {
                         type="video/mp4"/>
             </video>
             {!!selectedEvent.selectedEventVideo.timestamp && (<div style={rectangleStyle} className='green-rectangle'/>)}
-            <script src="https://vjs.zencdn.net/7.20.2/video.min.js"></script>
+            <script src="https://vjs.zencdn.net/7.20.2/video.min.js"/>
         </div>
     )
 }

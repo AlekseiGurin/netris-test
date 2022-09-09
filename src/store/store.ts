@@ -1,11 +1,9 @@
 import { configureStore, ThunkAction, Action } from '@reduxjs/toolkit';
-import counterReducer from '../modules/counter/counterSlice';
 import eventVideoSelectorReducer from "./slices/eventVideoSlice";
 import eventVideoListSlice from "./slices/eventVideoListSlice";
 
 export const store = configureStore({
   reducer: {
-    counter: counterReducer,
     selectedEventVideo: eventVideoSelectorReducer,
     eventList: eventVideoListSlice
   },

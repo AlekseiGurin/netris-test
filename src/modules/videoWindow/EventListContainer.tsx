@@ -34,11 +34,11 @@ const EventListContainer = () => {
             clearInterval(playingTimeIntervalRef.current as NodeJS.Timeout);
         }
     },[isPlaying])
-    const isPlayingListener = (e: object) => {
+    const isPlayingListener = () => {
         console.log('isPlaying')
         setIsPlaying(true);
     }
-    const isPausedListener = (e: object) => {
+    const isPausedListener = () => {
         console.log('isPaused')
         setIsPlaying(false);
     }
@@ -49,15 +49,13 @@ const EventListContainer = () => {
         dispatch(selectEventVideo(selectedEvent))
     }
     const renderEvent = (event: EventType) => {
-        //console.log('renderEvent timer',timer)
         const totalMs = event.timestamp;
         let min = Math.floor(Number(totalMs)/60000).toString();
         let sec = (Math.floor(Number(totalMs)/1000)%60).toString();
         const ms = totalMs.toString().slice(-3,-1);
-       // console.log('ms',ms)
         if(Number(min) < 9) {
             min = `0${min}`
-        };
+        }
         if(Number(sec) < 9) {
             sec = `0${sec}`
         }

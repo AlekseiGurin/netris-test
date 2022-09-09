@@ -1,8 +1,6 @@
-import { createAsyncThunk, createSlice, PayloadAction } from '@reduxjs/toolkit';
-import { RootState, AppThunk } from '../../store/store';
-import events from "../../modules/videoWindow/eventList.json";
-import {eventVideoSelectorSlice, EventVideoState} from "./eventVideoSlice";
-//import { fetchCount } from './counterAPI';
+import { createSlice } from '@reduxjs/toolkit';
+import { RootState } from '../store';
+import events from '../../modules/videoWindow/eventList.json';
 
 const sortedListOfEvents = events.events.sort((a, b) => a.timestamp - b.timestamp )
 
@@ -21,7 +19,7 @@ interface EventVideo {
 export interface eventVideoListState {
     eventList: EventVideo[] | []
 
-};
+}
 
 const initialState: eventVideoListState = {
     eventList: [
