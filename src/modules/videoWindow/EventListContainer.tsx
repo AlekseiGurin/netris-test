@@ -1,13 +1,7 @@
 import React, { useEffect, useRef, useState } from "react";
 import { useAppDispatch, useAppSelector } from "../../store/hooks";
 import { selectEventVideo } from "../../store/slices/eventVideoSlice";
-import { selectEventList } from "../../store/slices/eventVideoListSlice";
-
-type EventType = {
-    id: number,
-    timestamp: number,
-    duration: number
-}
+import { EventVideo, markEvent, selectEventList } from "../../store/slices/eventVideoListSlice";
 
 const EventListContainer = () => {
     const dispatch = useAppDispatch();
@@ -16,6 +10,7 @@ const EventListContainer = () => {
     let videoElement: HTMLMediaElement ;
     const playingTimeIntervalRef = useRef<NodeJS.Timeout>();
     useEffect(()=> {
+        console.log('useEffect eventList',eventList )
         videoElement = document.getElementById('my-video') as HTMLMediaElement;
         videoElement.addEventListener('playing', isPlayingListener)
         videoElement.addEventListener('pause', isPausedListener)
@@ -33,7 +28,7 @@ const EventListContainer = () => {
         } else {
             clearInterval(playingTimeIntervalRef.current as NodeJS.Timeout);
         }
-    },[isPlaying])
+    },[isPlaying, eventList])
     const isPlayingListener = () => {
         console.log('isPlaying')
         setIsPlaying(true);
@@ -46,9 +41,10 @@ const EventListContainer = () => {
     const handleEventClick = (e: React.MouseEvent ) => {
         const id = Number(e.currentTarget.id)
         const selectedEvent = eventList.find(item => item.id === id)
-        dispatch(selectEventVideo(selectedEvent))
+        dispatch(selectEventVideo(selectedEvent));
+        dispatch(markEvent(id));
     }
-    const renderEvent = (event: EventType) => {
+    const renderEvent = (event: EventVideo) => {
         const totalMs = event.timestamp;
         let min = Math.floor(Number(totalMs)/60000).toString();
         let sec = (Math.floor(Number(totalMs)/1000)%60).toString();
@@ -61,14 +57,14 @@ const EventListContainer = () => {
         }
         const totalTimeString = `${min} : ${sec} : ${ms}`
         return (
-            <div key={event.id} id={event.id.toString()} className="event" onClick={handleEventClick}>
+            <div key={event.id} id={event.id.toString()} className={event.marked ? 'event selected' : 'event'} onClick={handleEventClick}>
                 <div>{totalTimeString}</div>
             </div>
         )
     }
     return (
         <div className="event-list-container">
-            {eventList.map((event) => renderEvent(event))}
+            {eventList.map((event: EventVideo) => renderEvent(event))}
         </div>
     )
 }
