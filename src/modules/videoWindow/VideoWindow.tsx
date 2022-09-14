@@ -2,8 +2,6 @@ import React, {useEffect, useRef } from 'react';
 import { useAppDispatch, useAppSelector } from "../../store/hooks";
 import { deleteEventVideo, selectEvent } from "../../store/slices/eventVideoSlice";
 import 'video.js/dist/video-js.css';
-import { loadingEventList } from "../../store/slices/eventVideoListSlice";
-
 
 const VideoWindow = () => {
     const dispatch = useAppDispatch();
@@ -16,17 +14,11 @@ const VideoWindow = () => {
     useEffect(() => {
         videoElement = document.getElementById('my-video') as HTMLMediaElement;
         if (timestamp) {
-            // const eventVideoElement = document.getElementById(selectedEvent.selectedEventVideo.id.toString()) as HTMLElement;
-            // console.log('eventVideoElement',eventVideoElement)
-            // eventVideoElement.classList.add('selected')
             videoElement.currentTime = timestamp
         }
-        console.log('selectedEvent',selectedEvent)
     },[selectedEvent]);
     useEffect(() => {
-        dispatch(loadingEventList());
         if (timestamp) {
-            console.log('delete')
             setTimeout(() => {
                 dispatch(deleteEventVideo())
                 clearInterval(playingTimeIntervalRef.current as NodeJS.Timeout);

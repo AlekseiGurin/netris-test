@@ -1,7 +1,7 @@
 import React, { useEffect, useRef, useState } from "react";
 import { useAppDispatch, useAppSelector } from "../../store/hooks";
 import { selectEventVideo } from "../../store/slices/eventVideoSlice";
-import { EventVideo, markEvent, selectEventList } from "../../store/slices/eventVideoListSlice";
+import {EventVideo, loadingEventList, markEvent, selectEventList} from "../../store/slices/eventVideoListSlice";
 
 const EventListContainer = () => {
     const dispatch = useAppDispatch();
@@ -10,7 +10,6 @@ const EventListContainer = () => {
     let videoElement: HTMLMediaElement ;
     const playingTimeIntervalRef = useRef<NodeJS.Timeout>();
     useEffect(()=> {
-        console.log('useEffect eventList',eventList )
         videoElement = document.getElementById('my-video') as HTMLMediaElement;
         videoElement.addEventListener('playing', isPlayingListener)
         videoElement.addEventListener('pause', isPausedListener)
@@ -29,6 +28,10 @@ const EventListContainer = () => {
             clearInterval(playingTimeIntervalRef.current as NodeJS.Timeout);
         }
     },[isPlaying, eventList])
+
+    useEffect(() => {
+        dispatch(loadingEventList());
+    }, [])
     const isPlayingListener = () => {
         console.log('isPlaying')
         setIsPlaying(true);

@@ -25,31 +25,21 @@ const initialState: eventVideoListState = {
     eventList: []
 };
 
-// type MarkEventPayloadType = {
-//     id: number
-// }
-
 export const eventVideoListSlice = createSlice({
     name: 'EvenVideoListSelector',
     initialState,
     reducers: {
         loadingEventList: (state) => {
-            console.log('loadingEventList')
             state.eventList = sortedListOfEvents
         },
         markEvent: (state, PayloadAction ) => {
-            console.log('PayloadAction markEvent',PayloadAction)
             const updatedEventList = sortedListOfEvents.map((item: EventVideo)  => {
                 if(item.id === PayloadAction.payload) {
                     item = {...item, marked: true}
-                    console.log('!!!!!!ITEM', item)
                 }
                 return item
             })
-
-            console.log('updatedEventList',updatedEventList)
             state.eventList = updatedEventList
-            console.log('state.eventList',state.eventList)
         }
     }
 });
