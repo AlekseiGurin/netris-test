@@ -4,10 +4,10 @@ import EventListContainer from "./modules/videoWindow/EventListContainer";
 
 function App() {
   return (
-    <div className="App">
+    <main className="App">
         <VideoWindow />
         <EventListContainer />
-    </div>
+    </main>
   );
 }
 

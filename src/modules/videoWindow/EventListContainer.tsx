@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from "react";
+import React, { useEffect } from "react";
 import { useAppDispatch, useAppSelector } from "../../store/hooks";
 import { selectEventVideo } from "../../store/slices/eventVideoSlice";
 import {EventVideo, loadingEventList, markEvent, selectEventList} from "../../store/slices/eventVideoListSlice";
@@ -6,40 +6,9 @@ import {EventVideo, loadingEventList, markEvent, selectEventList} from "../../st
 const EventListContainer = () => {
     const dispatch = useAppDispatch();
     const { eventList } = useAppSelector(selectEventList);
-    const [isPlaying, setIsPlaying] = useState(false);
-    let videoElement: HTMLMediaElement ;
-    const playingTimeIntervalRef = useRef<NodeJS.Timeout>();
-    useEffect(()=> {
-        videoElement = document.getElementById('my-video') as HTMLMediaElement;
-        videoElement.addEventListener('playing', isPlayingListener)
-        videoElement.addEventListener('pause', isPausedListener)
-        if (isPlaying) {
-            playingTimeIntervalRef.current = setInterval(() => {
-                eventList.forEach((item) => {
-                    const ms = item.timestamp.toString();
-                    const sec = (Math.floor(Number(item.timestamp)/1000)%60).toString();
-                    const totalTimer = Number(`${sec}.${ms}`);
-                        if (videoElement.currentTime === totalTimer) {
-                            dispatch(selectEventVideo(item))
-                        }
-                    })
-            }, 100)
-        } else {
-            clearInterval(playingTimeIntervalRef.current as NodeJS.Timeout);
-        }
-    },[isPlaying, eventList])
-
     useEffect(() => {
         dispatch(loadingEventList());
     }, [])
-    const isPlayingListener = () => {
-        console.log('isPlaying')
-        setIsPlaying(true);
-    }
-    const isPausedListener = () => {
-        console.log('isPaused')
-        setIsPlaying(false);
-    }
 
     const handleEventClick = (e: React.MouseEvent ) => {
         const id = Number(e.currentTarget.id)
