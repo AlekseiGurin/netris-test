@@ -33,13 +33,12 @@ export const eventVideoListSlice = createSlice({
             state.eventList = sortedListOfEvents
         },
         markEvent: (state, PayloadAction ) => {
-            const updatedEventList = sortedListOfEvents.map((item: EventVideo)  => {
+            state.eventList = sortedListOfEvents.map((item: EventVideo)  => {
                 if(item.id === PayloadAction.payload) {
                     item = {...item, marked: true}
                 }
                 return item
             })
-            state.eventList = updatedEventList
         }
     }
 });

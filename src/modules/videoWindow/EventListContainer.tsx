@@ -1,13 +1,14 @@
 import React, { useEffect } from "react";
 import { useAppDispatch, useAppSelector } from "../../store/hooks";
 import { selectEventVideo } from "../../store/slices/eventVideoSlice";
-import {EventVideo, loadingEventList, markEvent, selectEventList} from "../../store/slices/eventVideoListSlice";
+import { EventVideo, loadingEventList, markEvent, selectEventList } from "../../store/slices/eventVideoListSlice";
 
 const EventListContainer = () => {
     const dispatch = useAppDispatch();
     const { eventList } = useAppSelector(selectEventList);
     useEffect(() => {
         dispatch(loadingEventList());
+
     }, [])
 
     const handleEventClick = (e: React.MouseEvent ) => {

@@ -2,7 +2,7 @@ import React, {useEffect, useRef, useState} from 'react';
 import { useAppDispatch, useAppSelector } from "../../store/hooks";
 import { deleteEventVideo, selectEvent, selectEventVideo } from "../../store/slices/eventVideoSlice";
 import 'video.js/dist/video-js.css';
-import { selectEventList } from "../../store/slices/eventVideoListSlice";
+import { markEvent, selectEventList } from "../../store/slices/eventVideoListSlice";
 
 const VideoWindow = () => {
     const dispatch = useAppDispatch();
@@ -22,17 +22,23 @@ const VideoWindow = () => {
         // @ts-ignore: Object is possibly 'null'.
         videoElementRef.current.addEventListener('pause', isPausedListener)
         if (isPlaying) {
-            playingTimeIntervalRef.current = setInterval(() => {
-                eventList.forEach((item) => {
-                    const ms = item.timestamp.toString();
-                    const sec = (Math.floor(Number(item.timestamp)/1000)%60).toString();
-                    const totalTimer = Number(`${sec}.${ms}`);
-                    // @ts-ignore: Object is possibly 'null'.
-                    if (videoElementRef.currentTime === totalTimer) {
-                        dispatch(selectEventVideo(item))
-                    }
-                })
-            }, 100)
+            // @ts-ignore: Object is possibly 'null'.
+            const videoCurrentTime = videoElementRef.current.currentTime.toString();
+            const dot = videoCurrentTime.indexOf('.');
+            const sec = +videoCurrentTime.slice(0, dot);
+            const ms = videoCurrentTime.slice(dot +1, dot + 4);
+            const totalVideoMs = +sec * 1000 + +ms;
+            const futureEvents = eventList.filter((item) => {
+                return item.timestamp > totalVideoMs
+            })
+            if(futureEvents.length) {
+                const firstFutureEvents = futureEvents[0];
+                const nextEventTime = firstFutureEvents.timestamp - totalVideoMs;
+                playingTimeIntervalRef.current = setTimeout(() => {
+                    dispatch(selectEventVideo(firstFutureEvents))
+                    dispatch(markEvent(firstFutureEvents.id));
+                }, nextEventTime)
+            }
         } else {
             clearInterval(playingTimeIntervalRef.current as NodeJS.Timeout);
         }
