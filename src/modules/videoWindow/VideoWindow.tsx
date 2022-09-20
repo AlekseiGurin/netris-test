@@ -11,17 +11,37 @@ const VideoWindow = () => {
     const { duration } = selectedEvent.selectedEventVideo;
     const timestamp = selectedEvent.selectedEventVideo && selectedEvent.selectedEventVideo.timestamp && Number((selectedEvent.selectedEventVideo.timestamp / 1000).toFixed(3));
     const videoElementRef = useRef<HTMLVideoElement>(null)
-    const playingTimeIntervalRef = useRef<NodeJS.Timeout>();
-
-    // TODO
+    const playingTimeoutRef = useRef<NodeJS.Timeout>();
     const { eventList } = useAppSelector(selectEventList);
     const [isPlaying, setIsPlaying] = useState(false);
+    const [isSeeking, setIsSeeking] = useState(false);
+    const isPlayingListener = () => {
+        console.log('isPlaying')
+        setIsPlaying(true);
+    }
+    const isPausedListener = () => {
+        console.log('isPaused')
+        setIsPlaying(false);
+    }
+    const isSeekingListener = () => {
+        console.log('seeking')
+        setIsSeeking(true);
+    }
+    const isSeekedListener = () => {
+        console.log('seeked')
+        setIsSeeking(false);
+    }
     useEffect(()=> {
         // @ts-ignore: Object is possibly 'null'.
         videoElementRef.current.addEventListener('playing', isPlayingListener)
         // @ts-ignore: Object is possibly 'null'.
         videoElementRef.current.addEventListener('pause', isPausedListener)
+        // @ts-ignore: Object is possibly 'null'.
+        videoElementRef.current.addEventListener('seeked', isSeekedListener)
+        // @ts-ignore: Object is possibly 'null'.
+        videoElementRef.current.addEventListener('seeking', isSeekingListener)
         if (isPlaying) {
+            clearTimeout(playingTimeoutRef.current as NodeJS.Timeout);
             // @ts-ignore: Object is possibly 'null'.
             const videoCurrentTime = videoElementRef.current.currentTime.toString();
             const dot = videoCurrentTime.indexOf('.');
@@ -32,27 +52,19 @@ const VideoWindow = () => {
                 return item.timestamp > totalVideoMs
             })
             if(futureEvents.length) {
-                const firstFutureEvents = futureEvents[0];
-                const nextEventTime = firstFutureEvents.timestamp - totalVideoMs;
-                playingTimeIntervalRef.current = setTimeout(() => {
-                    dispatch(selectEventVideo(firstFutureEvents))
-                    dispatch(markEvent(firstFutureEvents.id));
+                const nextEvent = futureEvents[0];
+                const nextEventTime = nextEvent.timestamp - totalVideoMs;
+                // console.log('nextEvent',nextEvent)
+                // console.log('futureEvents',futureEvents)
+                playingTimeoutRef.current = setTimeout(() => {
+                    dispatch(selectEventVideo(nextEvent))
+                    dispatch(markEvent(nextEvent.id));
                 }, nextEventTime)
             }
         } else {
-            clearInterval(playingTimeIntervalRef.current as NodeJS.Timeout);
+            clearTimeout(playingTimeoutRef.current as NodeJS.Timeout);
         }
-    },[isPlaying, eventList])
-    const isPlayingListener = () => {
-        console.log('isPlaying')
-        setIsPlaying(true);
-    }
-    const isPausedListener = () => {
-        console.log('isPaused')
-        setIsPlaying(false);
-    }
-    // TODO
-
+    },[isPlaying, eventList, selectedEvent, isSeeking])
     useEffect(() => {
         if (timestamp) {
             // @ts-ignore: Object is possibly 'null'.
@@ -61,7 +73,7 @@ const VideoWindow = () => {
         if (timestamp && isPlaying) {
             setTimeout(() => {
                 dispatch(deleteEventVideo())
-                clearInterval(playingTimeIntervalRef.current as NodeJS.Timeout);
+                clearInterval(playingTimeoutRef.current as NodeJS.Timeout);
             }, duration)
         }
     },[timestamp, duration, isPlaying])

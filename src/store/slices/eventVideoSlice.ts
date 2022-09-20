@@ -34,7 +34,6 @@ export const eventVideoSelectorSlice = createSlice({
     initialState,
     reducers: {
         selectEventVideo: (state, PayloadAction) => {
-            console.log('PayloadAction',PayloadAction)
             state.selectedEventVideo = PayloadAction.payload;
         },
         deleteEventVideo: (state) => {
@@ -55,7 +54,5 @@ export const eventVideoSelectorSlice = createSlice({
 });
 
 export const { selectEventVideo, deleteEventVideo } = eventVideoSelectorSlice.actions;
-
 export const selectEvent = (state: RootState) => state.selectedEventVideo;
-
 export default eventVideoSelectorSlice.reducer;
