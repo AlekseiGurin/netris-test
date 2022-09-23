@@ -15,6 +15,7 @@ export interface EventVideo {
     },
     duration: number,
     marked?: boolean | undefined
+    selected?: boolean | undefined
 }
 
 export interface eventVideoListState {
@@ -33,9 +34,19 @@ export const eventVideoListSlice = createSlice({
             state.eventList = sortedListOfEvents
         },
         markEvent: (state, PayloadAction ) => {
+            console.log('markEvent')
+            state.eventList = state.eventList.map((item: EventVideo)  => {
+                if(item.id === PayloadAction.payload) {
+                    item = {...item, marked: true, selected: true}
+                }
+                return item
+            })
+        },
+        clearEvent: (state, PayloadAction) => {
+            console.log('clearEvent')
             state.eventList = sortedListOfEvents.map((item: EventVideo)  => {
                 if(item.id === PayloadAction.payload) {
-                    item = {...item, marked: true}
+                    item = {...item, selected: false}
                 }
                 return item
             })
@@ -43,7 +54,7 @@ export const eventVideoListSlice = createSlice({
     }
 });
 
-export const { loadingEventList, markEvent } = eventVideoListSlice.actions;
+export const { loadingEventList, markEvent, clearEvent } = eventVideoListSlice.actions;
 
 export const selectEventList = (state: RootState) => state.eventList;
 

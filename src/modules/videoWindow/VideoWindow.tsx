@@ -1,18 +1,22 @@
-import React, {useEffect, useRef, useState} from 'react';
+import React, { useEffect, useMemo, useRef, useState } from 'react';
 import { useAppDispatch, useAppSelector } from "../../store/hooks";
 import { deleteEventVideo, selectEvent, selectEventVideo } from "../../store/slices/eventVideoSlice";
 import 'video.js/dist/video-js.css';
-import { markEvent, selectEventList } from "../../store/slices/eventVideoListSlice";
+import {clearEvent, markEvent, selectEventList} from "../../store/slices/eventVideoListSlice";
 
 const VideoWindow = () => {
     const dispatch = useAppDispatch();
-    const selectedEvent = useAppSelector(selectEvent);
-    const rectangleStyle = selectedEvent.selectedEventVideo.zone;
-    const { duration } = selectedEvent.selectedEventVideo;
-    const timestamp = selectedEvent.selectedEventVideo && selectedEvent.selectedEventVideo.timestamp && Number((selectedEvent.selectedEventVideo.timestamp / 1000).toFixed(3));
+    //const selectedEvent = useAppSelector(selectEvent);
+    //const rectangleStyle = selectedEvent.selectedEventVideo.zone;
+    //const { duration } = selectedEvent.selectedEventVideo;
+    //const timestamp = selectedEvent.selectedEventVideo && selectedEvent.selectedEventVideo.timestamp && Number((selectedEvent.selectedEventVideo.timestamp / 1000).toFixed(3));
     const videoElementRef = useRef<HTMLVideoElement>(null)
     const playingTimeoutRef = useRef<NodeJS.Timeout>();
     const { eventList } = useAppSelector(selectEventList);
+    const selectedEventList = useMemo(()=> (eventList.filter(item => item.marked)),[eventList]);
+    const renderRectangle = useMemo(() => (
+        selectedEventList.map(item => <div key={item.id} style={item.zone} className='green-rectangle'/>)
+    ), [selectedEventList])
     const [isPlaying, setIsPlaying] = useState(false);
     const [isSeeking, setIsSeeking] = useState(false);
     const isPlayingListener = () => {
@@ -32,6 +36,7 @@ const VideoWindow = () => {
         setIsSeeking(false);
     }
     useEffect(()=> {
+        console.log('eventList',eventList);
         // @ts-ignore: Object is possibly 'null'.
         videoElementRef.current.addEventListener('playing', isPlayingListener)
         // @ts-ignore: Object is possibly 'null'.
@@ -57,26 +62,34 @@ const VideoWindow = () => {
                 // console.log('nextEvent',nextEvent)
                 // console.log('futureEvents',futureEvents)
                 playingTimeoutRef.current = setTimeout(() => {
-                    dispatch(selectEventVideo(nextEvent))
+                    console.log('playingTimeoutRef.current')
+                    //dispatch(selectEventVideo(nextEvent))
                     dispatch(markEvent(nextEvent.id));
-                }, nextEventTime)
+                }, nextEventTime);
             }
         } else {
             clearTimeout(playingTimeoutRef.current as NodeJS.Timeout);
         }
-    },[isPlaying, eventList, selectedEvent, isSeeking])
+    },[isPlaying, isSeeking])
     useEffect(() => {
-        if (timestamp) {
-            // @ts-ignore: Object is possibly 'null'.
-            videoElementRef.current.currentTime = timestamp
+        // if (timestamp) {
+        //     // @ts-ignore: Object is possibly 'null'.
+        //     videoElementRef.current.currentTime = timestamp
+        // }
+        if (selectedEventList.length && isPlaying) {
+            console.log('selectedEventList', selectedEventList)
+            selectedEventList.forEach(item => {
+                dispatch(markEvent(item.id));
+                playingTimeoutRef.current = setTimeout(() => {
+                    console.log('setTimeout')
+                    dispatch(clearEvent(item.id))
+                    clearInterval(playingTimeoutRef.current as NodeJS.Timeout);
+                }, item.duration)
+            })
+        } else if(!isPlaying) {
+            clearTimeout(playingTimeoutRef.current as NodeJS.Timeout);
         }
-        if (timestamp && isPlaying) {
-            setTimeout(() => {
-                dispatch(deleteEventVideo())
-                clearInterval(playingTimeoutRef.current as NodeJS.Timeout);
-            }, duration)
-        }
-    },[timestamp, duration, isPlaying])
+    },[isPlaying, eventList])
     return (
         <div className="video-window-container">
             <video
@@ -93,7 +106,7 @@ const VideoWindow = () => {
                 <source src="http://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4"
                         type="video/mp4"/>
             </video>
-            {!!selectedEvent.selectedEventVideo.timestamp && (<div style={rectangleStyle} className='green-rectangle'/>)}
+            {renderRectangle}
             <script src="https://vjs.zencdn.net/7.20.2/video.min.js"/>
         </div>
     )

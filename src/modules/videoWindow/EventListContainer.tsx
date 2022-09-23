@@ -13,8 +13,8 @@ const EventListContainer = () => {
 
     const handleEventClick = (e: React.MouseEvent ) => {
         const id = Number(e.currentTarget.id)
-        const selectedEvent = eventList.find(item => item.id === id)
-        dispatch(selectEventVideo(selectedEvent));
+        //const selectedEvent = eventList.find(item => item.id === id)
+        //dispatch(selectEventVideo(selectedEvent));
         dispatch(markEvent(id));
     }
     const renderEvent = (event: EventVideo) => {
