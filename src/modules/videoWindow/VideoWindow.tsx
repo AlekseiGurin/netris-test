@@ -1,7 +1,6 @@
 import React, {useEffect, useRef, useState} from 'react';
 import { useAppDispatch, useAppSelector } from "../../store/hooks";
 import { deleteEventVideo, selectEvent, selectEventVideo } from "../../store/slices/eventVideoSlice";
-import 'video.js/dist/video-js.css';
 import { markEvent, selectEventList } from "../../store/slices/eventVideoListSlice";
 
 const VideoWindow = () => {
@@ -54,8 +53,6 @@ const VideoWindow = () => {
             if(futureEvents.length) {
                 const nextEvent = futureEvents[0];
                 const nextEventTime = nextEvent.timestamp - totalVideoMs;
-                // console.log('nextEvent',nextEvent)
-                // console.log('futureEvents',futureEvents)
                 playingTimeoutRef.current = setTimeout(() => {
                     dispatch(selectEventVideo(nextEvent))
                     dispatch(markEvent(nextEvent.id));
@@ -88,13 +85,11 @@ const VideoWindow = () => {
                 width="640"
                 height="264"
                 poster="../../../public/poster.png"
-                data-setup="{}"
             >
                 <source src="http://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4"
                         type="video/mp4"/>
             </video>
             {!!selectedEvent.selectedEventVideo.timestamp && (<div style={rectangleStyle} className='green-rectangle'/>)}
-            <script src="https://vjs.zencdn.net/7.20.2/video.min.js"/>
         </div>
     )
 }

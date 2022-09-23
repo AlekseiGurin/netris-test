@@ -48,7 +48,6 @@ export const eventVideoSelectorSlice = createSlice({
                 width: 0
                 }
             }
-            console.log('selectedEventVideo',state.selectedEventVideo)
         }
     }
 });
